@@ -1,4 +1,4 @@
-import dotenv from "dotenv";
+import dotenv from 'dotenv';
 
 dotenv.config({});
 
@@ -17,8 +17,13 @@ const config = {
   RESET_PASSWORD_TOKEN: process.env.RESET_PASSWORD_TOKEN,
   JWT_REFRESH_EXPIRATION_DAYS: process.env.JWT_REFRESH_EXPIRATION_DAYS,
   JWT_ACCESS_EXPIRATION_TIME: process.env.JWT_ACCESS_EXPIRATION_TIME,
-  JWT_RESET_PASSWORD_EXPIRATION_DAYS:
-    process.env.JWT_RESET_PASSWORD_EXPIRATION_DAYS,
+  JWT_RESET_PASSWORD_EXPIRATION_DAYS: process.env.JWT_RESET_PASSWORD_EXPIRATION_DAYS,
+  SMTP_HOST: process.env.SMTP_HOST,
+  SMTP_PORT: process.env.SMTP_PORT,
+  SMTP_EMAIL: process.env.SMTP_EMAIL,
+  SMTP_USER: process.env.SMTP_USER,
+  SMTP_PASSWORD: process.env.SMTP_PASSWORD,
+  FRONTEND_HOST: process.env.FRONTEND_HOST
 };
 
 export default config;

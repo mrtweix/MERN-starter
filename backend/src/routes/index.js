@@ -1,11 +1,11 @@
-import config from "../config/config.js";
-import authRoutes from "./auth.routes.js";
+import config from '../config/config.js';
+import authRoutes from './auth.routes.js';
 
 const defaultRoutes = [
   {
-    path: "/auth",
-    route: authRoutes,
-  },
+    path: '/auth',
+    route: authRoutes
+  }
 ];
 
 const mountRoutes = (app) => {

@@ -1,11 +1,11 @@
-import { Strategy as JwtStrategy, ExtractJwt } from "passport-jwt";
-import config from "../../config/config.js";
-import User from "../../models/User.model.js";
+import { Strategy as JwtStrategy, ExtractJwt } from 'passport-jwt';
+import config from '../../config/config.js';
+import User from '../../models/User.model.js';
 
 const jwtStrategy = new JwtStrategy(
   {
     secretOrKey: config.JWT_SECRET,
-    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme("jwt"),
+    jwtFromRequest: ExtractJwt.fromAuthHeaderWithScheme('jwt')
   },
   async (payload, done) => {
     try {
