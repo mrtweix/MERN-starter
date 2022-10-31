@@ -6,7 +6,7 @@ const errorSerialize = (err, req, res, next) => {
 
   error.message = err.message;
 
-  // Log to console for dev
+  // Log errors
   console.table({
     name: err.name,
     code: err.code,

@@ -5,7 +5,9 @@ import validate from '../validations/validator.js';
 
 const router = express.Router();
 
-router.route('/signup').post(validate(validation.register), authController.userSignup);
-router.route('/signin').post(validate(validation.login), authController.userSignin);
+router.post('/signup', validate(validation.register), authController.userSignup);
+router.post('/signin', validate(validation.login), authController.userSignin);
+router.get('/verify_email/:token', authController.verifyEmailActivation);
+router.post('/forgot_password', authController.forgotPassword);
 
 export default router;

@@ -1,12 +1,10 @@
 import morgan from 'morgan';
 import express from 'express';
-import passport from 'passport';
 import httpStatus from 'http-status';
 import config from './config/config.js';
 import mountRoutes from './routes/index.js';
 import dbConnect from './config/dbConnect.js';
 import runServer from './config/runServer.js';
-import jwtStrategy from './globals/services/authStrategy.js';
 import rateLimiter from './globals/services/rateLimiter.js';
 import securityMiddleware from './globals/middlewares/security.middleware.js';
 import errorSerialize from './globals/middlewares/errorSerialize.middleware.js';
@@ -26,10 +24,6 @@ if (config.NODE_ENV == 'DEVELOPMENT') {
 // set security middleware
 securityMiddleware(app);
 
-// jwt authentication
-app.use(passport.initialize());
-passport.use('jwt', jwtStrategy);
-
 // limit repeated failed requests to auth endpoints
 if (config.NODE_ENV === 'production') {
   app.use('/api/v1/auth', rateLimiter);
@@ -46,7 +40,7 @@ app.get('/', function (req, res) {
 
 // send 404 error for any unknown api request
 app.use((err, req, res, next) => {
-  if (err) return res.status(httpStatus.NOT_FOUND).send(err);
+  if (err) return res.status(httpStatus.NOT_FOUND).json({ success: false, message: 'No such route found' });
   next();
 });
 

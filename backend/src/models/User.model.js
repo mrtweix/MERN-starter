@@ -34,9 +34,6 @@ const UserSchema = new mongoose.Schema(
       trim: true,
       minlength: 6
     },
-    confirmEmailToken: String,
-    resetPasswordToken: String,
-    resetPasswordExpire: Date,
     isEmailConfirmed: {
       type: Boolean,
       default: false

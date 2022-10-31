@@ -12,6 +12,8 @@ const dbConnect = () => {
       useNewUrlParser: true
     });
     console.log(`Database connected established`);
+    // mongoose debugger
+    mongoose.set('debug', true);
   } catch (error) {
     console.log(`Database connection failed`);
   }
