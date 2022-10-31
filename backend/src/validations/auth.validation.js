@@ -14,9 +14,12 @@ const register = Joi.object().keys({ firstName, lastName, email, password });
 
 const login = Joi.object().keys({ email, password });
 
+const forgotPassword = Joi.object().keys({ email });
+
 const validation = {
   register,
-  login
+  login,
+  forgotPassword
 };
 
 export default validation;

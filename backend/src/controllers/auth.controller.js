@@ -75,10 +75,27 @@ const userSignin = asyncHandler(async (req, res, next) => {
   res.status(httpStatus.OK).json({ success: true, result: { user, ...tokens } });
 });
 
+// @desc    Logout user
+// @route   POST /api/v1/auth/logout
+// @access  Public
+const userLogout = asyncHandler(async (req, res, next) => {
+  const { refreshToken } = req.body;
+
+  // Validate token
+  const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
+  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+
+  // Update record
+  await isValidToken.remove();
+
+  // Final result
+  res.status(httpStatus.OK).json({ success: true, result: 'Logout successful' });
+});
+
 // @desc    Verify email
 // @route   GET /api/v1/auth/verify-email/:token
 // @access  Public
-const verifyEmailActivation = asyncHandler(async (req, res, next) => {
+const userEmailVerification = asyncHandler(async (req, res, next) => {
   const token = req.params.token;
 
   // Validate token
@@ -141,7 +158,8 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
 const authController = {
   userSignup,
   userSignin,
-  verifyEmailActivation,
+  userLogout,
+  userEmailVerification,
   forgotPassword
 };
 export default authController;
