@@ -9,7 +9,6 @@ const config = {
   DB_URL: process.env.DB_URL,
   PORT: process.env.PORT || DEFAULT_PORT,
   JWT_SECRET: process.env.JWT_SECRET,
-  CLIENT_URL: process.env.CLIENT_URL,
   BASE_PATH: process.env.BASE_PATH,
   ACCESS_TOKEN: process.env.ACCESS_TOKEN,
   REFRESH_TOKEN: process.env.REFRESH_TOKEN,
@@ -23,7 +22,8 @@ const config = {
   SMTP_EMAIL: process.env.SMTP_EMAIL,
   SMTP_USER: process.env.SMTP_USER,
   SMTP_PASSWORD: process.env.SMTP_PASSWORD,
-  FRONTEND_HOST: process.env.FRONTEND_HOST
+  FRONTEND_HOST: process.env.FRONTEND_HOST,
+  allowedOrigins: [process.env.CLIENT_URL]
 };
 
 export default config;

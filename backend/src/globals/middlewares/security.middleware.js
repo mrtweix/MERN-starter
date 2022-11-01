@@ -3,10 +3,12 @@ import cors from 'cors';
 import xss from 'xss-clean';
 import helmet from 'helmet';
 import passport from 'passport';
+import httpStatus from 'http-status';
 import compression from 'compression';
 import { json, urlencoded } from 'express';
-import mongoSanitize from 'express-mongo-sanitize';
 import config from '../../config/config.js';
+import mongoSanitize from 'express-mongo-sanitize';
+import CustomError from '../services/customError.js';
 
 const securityMiddleware = (app) => {
   // http parameters pollution security
@@ -26,7 +28,13 @@ const securityMiddleware = (app) => {
   // enable cors
   app.use(
     cors({
-      origin: config.CLIENT_URL,
+      origin: (origin, callback) => {
+        if (config.allowedOrigins.indexOf(origin) !== -1 || !origin) {
+          callback(null, true);
+        } else {
+          callback(new CustomError(httpStatus.FORBIDDEN, 'Not allowed by CORS', 'FORBIDDEN'));
+        }
+      },
       credentials: true,
       optionsSuccessStatus: 200,
       methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS']
