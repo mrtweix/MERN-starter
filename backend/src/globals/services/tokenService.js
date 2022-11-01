@@ -40,7 +40,6 @@ const verifyToken = async (token, type) => {
     if (!tokenDoc) return false;
     return tokenDoc;
   } catch (e) {
-    console.log(e);
     return false;
   }
 };

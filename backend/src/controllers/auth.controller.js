@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import httpStatus from 'http-status';
 import config from '../config/config.js';
 import User from '../models/User.model.js';
+import Token from '../models/Token.model.js';
 import customError from '../globals/services/customError.js';
 import tokenService from '../globals/services/tokenService.js';
 import emailService from '../globals/services/emailService.js';
@@ -77,7 +78,7 @@ const userSignin = asyncHandler(async (req, res, next) => {
 
 // @desc    Logout user
 // @route   POST /api/v1/auth/logout
-// @access  Public
+// @access  Private
 const userLogout = asyncHandler(async (req, res, next) => {
   const { refreshToken } = req.body;
 
@@ -89,12 +90,12 @@ const userLogout = asyncHandler(async (req, res, next) => {
   await isValidToken.remove();
 
   // Final result
-  res.status(httpStatus.OK).json({ success: true, result: 'Logout successful' });
+  res.status(httpStatus.ACCEPTED).json({ success: true, result: 'Logout successful' });
 });
 
 // @desc    Verify email
 // @route   GET /api/v1/auth/verify-email/:token
-// @access  Public
+// @access  Private
 const userEmailVerification = asyncHandler(async (req, res, next) => {
   const token = req.params.token;
 
@@ -118,7 +119,7 @@ const userEmailVerification = asyncHandler(async (req, res, next) => {
   );
 
   // Final result
-  res.status(httpStatus.OK).json({ success: true, result: 'Account is activated' });
+  res.status(httpStatus.CREATED).json({ success: true, result: 'Account is activated' });
 });
 
 // @desc    Forgot password
@@ -149,9 +150,52 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   });
 
   // Final result
-  res.status(httpStatus.OK).json({
+  res.status(httpStatus.CREATED).json({
     success: true,
     result: `Check your mail. A reset link has been sent on ${email}`
+  });
+});
+
+// @desc    Reset password
+// @route   POST /api/v1/auth/reset_password/:token
+// @access  Private
+const resetPassword = asyncHandler(async (req, res, next) => {
+  const token = req.params.token;
+  const { newPassword } = req.body;
+
+  // Validate token
+  const isValidToken = await tokenService.verifyToken(token, config.RESET_PASSWORD_TOKEN);
+  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+
+  // Validate user and update password
+  const user = await User.findOne({
+    $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
+  });
+  if (!user) return next(new customError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
+
+  user.password = newPassword;
+  await user.save();
+
+  // Cleanup
+  await Token.deleteMany({ user: isValidToken.user, type: config.RESET_PASSWORD_TOKEN });
+
+  // Final result
+  res.status(httpStatus.CREATED).json({
+    success: true,
+    result: 'Password has been updated successfully'
+  });
+});
+
+// @desc    Get user information
+// @route   POST /api/v1/auth/me
+// @access  Private
+const getUserDetails = asyncHandler(async (req, res, next) => {
+  const user = req.user;
+
+  // Final result
+  res.status(httpStatus.OK).json({
+    success: true,
+    result: user
   });
 });
 
@@ -160,6 +204,8 @@ const authController = {
   userSignin,
   userLogout,
   userEmailVerification,
-  forgotPassword
+  forgotPassword,
+  resetPassword,
+  getUserDetails
 };
 export default authController;
