@@ -25,7 +25,7 @@ const authorize = asyncHandler(async (req, res, next) => {
   }
 
   if (!token) {
-    return next(new CustomError(httpStatus.BAD_REQUEST, 'No token found', 'BAD_REQUEST'));
+    return next(new CustomError(httpStatus.FORBIDDEN, 'Not authorized', 'FORBIDDEN'));
   }
 });
 

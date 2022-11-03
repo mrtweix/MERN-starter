@@ -199,6 +199,32 @@ const getUserDetails = asyncHandler(async (req, res, next) => {
   });
 });
 
+// @desc    Get new refresh token
+// @route   POST /api/v1/auth/refresh
+// @access  Private
+const getRefreshToken = asyncHandler(async (req, res, next) => {
+  const { refreshToken } = req.body;
+
+  // Validate token
+  const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
+  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+
+  // Validate user
+  const user = await User.findOne({
+    $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
+  });
+  if (!user) return next(new customError(httpStatus.UNAUTHORIZED, 'Unauthorized user access', 'UNAUTHORIZED'));
+
+  // Generate token
+  const tokens = await tokenService.generateAuthToken(user);
+
+  // Final result
+  res.status(httpStatus.OK).json({
+    success: true,
+    result: tokens
+  });
+});
+
 const authController = {
   userSignup,
   userSignin,
@@ -206,6 +232,7 @@ const authController = {
   userEmailVerification,
   forgotPassword,
   resetPassword,
-  getUserDetails
+  getUserDetails,
+  getRefreshToken
 };
 export default authController;
