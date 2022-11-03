@@ -6,6 +6,7 @@ import Homepage from '../pages/Homepage';
 import Login from '../pages/Login';
 import Register from '../pages/Register';
 import MainDash from '../pages/MainDash';
+import NotFoundPage from '../components/NotFoundPage';
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
           <Route index element={<MainDash />} />
         </Route>
       </Route>
+      <Route path="*" element={<NotFoundPage />} />
     </Routes>
   );
 };

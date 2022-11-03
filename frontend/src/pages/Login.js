@@ -1,9 +1,12 @@
 import React from 'react';
 import { useDispatch } from 'react-redux';
+import authApiSlice from '../redux/auth/authApi';
 import { authActions } from '../redux/auth/authSlice';
+import { setACookie } from '../utils/auth.utils';
 
 const Login = () => {
   const dispatch = useDispatch();
+  const [login, { isLoading }] = authApiSlice.useLoginMutation();
 
   const [formData, setFormData] = React.useState({
     email: '',
@@ -11,10 +14,12 @@ const Login = () => {
   });
   const { email, password } = formData;
 
-  const submitEventHandler = e => {
+  const submitEventHandler = async e => {
     e.preventDefault();
-    console.log(formData);
-    dispatch(authActions.login(formData));
+    const result = await login(formData);
+    console.log(result);
+    // setACookie('token', result?.access?.token, result?.access?.expires);
+    // dispatch(authActions.loginRequest(formData));
   };
   return (
     <form>

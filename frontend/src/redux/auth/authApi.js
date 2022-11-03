@@ -12,22 +12,31 @@ const baseQuery = fetchBaseQuery({
 });
 
 const baseQueryWithReauth = async (args, api, extraOptions) => {
-  let result = await baseQuery(args, api, extraOptions);
+  // console.log(args); // request url, method, body
+  // console.log(api); // signal, dispatch, getState()
+  // console.log(extraOptions); //custom like {shout: true}
 
+  let result = await baseQuery(args, api, extraOptions);
   console.log(result);
-  // if (result?.error?.originalStatus >= 403) {
+
+  // If you want, handle other status codes, too
+  // if (result?.error?.status === 403) {
   //   console.log('sending refresh token');
+
   //   // send refresh token to get new access token
-  //   const refreshResult = await baseQuery('/refreshToken', api, extraOptions);
-  //   console.log(refreshResult);
-  //   if (refreshResult?.success) {
-  //     const user = api.getState().auth.user;
+  //   const refreshResult = await baseQuery('/auth/refresh', api, extraOptions);
+
+  //   if (refreshResult?.data) {
   //     // store the new token
-  //     api.dispatch(authActions.setCredentils({ ...refreshResult.result, user }));
-  //     // retry the original query with new access token
+  //     api.dispatch(setCredentials({ ...refreshResult.data }));
+
+  //     // retry original query with new access token
   //     result = await baseQuery(args, api, extraOptions);
   //   } else {
-  //     api.dispatch(authActions.logout());
+  //     if (refreshResult?.error?.status === 403) {
+  //       refreshResult.error.data.message = 'Your login has expired.';
+  //     }
+  //     return refreshResult;
   //   }
   // }
 
@@ -36,29 +45,27 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
+  tagTypes: ['User'],
+  endpoints: builder => ({})
+});
+
+export const authApiSlice = apiSlice.injectEndpoints({
   endpoints: builder => ({
     login: builder.mutation({
       query: credentials => ({
-        url: '/auth',
+        url: '/auth/signin',
         method: 'POST',
         body: { ...credentials }
+      })
+    }),
+    userLogout: builder.mutation({
+      query: token => ({
+        url: '/auth/logout',
+        method: 'POST',
+        body: { ...token }
       })
     })
   })
 });
 
-export default apiSlice;
-
-// export const authApiSlice = apiSlice.injectEndpoints({
-//   endpoints: builder => ({
-//     login: builder.mutation({
-//       query: credentials => ({
-//         url: '/auth',
-//         method: 'POST',
-//         body: { ...credentials }
-//       })
-//     })
-//   })
-// });
-
-// export const { useLoginMutation } = authApiSlice;
+export default authApiSlice;
