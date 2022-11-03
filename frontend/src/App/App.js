@@ -7,8 +7,11 @@ import Login from '../pages/Login';
 import Register from '../pages/Register';
 import MainDash from '../pages/MainDash';
 import NotFoundPage from '../components/NotFoundPage';
+import { withCookies } from 'react-cookie';
+import useAuth from '../hooks/useAuth';
 
 const App = () => {
+  useAuth();
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
@@ -24,4 +27,4 @@ const App = () => {
   );
 };
 
-export default App;
+export default withCookies(App);

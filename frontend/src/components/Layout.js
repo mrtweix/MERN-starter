@@ -1,11 +1,11 @@
 import { Outlet } from 'react-router-dom';
 import React from 'react';
-import Navbar from './Navbar';
+import DashHeader from './DashHeader';
 
 const Layout = () => {
   return (
     <>
-      <Navbar />
+      <DashHeader />
       <Outlet />
     </>
   );

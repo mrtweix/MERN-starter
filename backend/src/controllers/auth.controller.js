@@ -72,8 +72,11 @@ const userSignin = asyncHandler(async (req, res, next) => {
   // Generate token
   const tokens = await tokenService.generateAuthToken(user);
 
+  // return new user without password
+  const newUser = await User.findOne({ _id: user.id }).select('-password');
+
   // Final result
-  res.status(httpStatus.OK).json({ success: true, result: { user, ...tokens } });
+  res.status(httpStatus.OK).json({ success: true, result: { user: newUser, ...tokens } });
 });
 
 // @desc    Logout user
@@ -87,7 +90,7 @@ const userLogout = asyncHandler(async (req, res, next) => {
   if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
 
   // Update record
-  await isValidToken.remove();
+  await tokenService.removeSavedToken(refreshToken);
 
   // Final result
   res.status(httpStatus.ACCEPTED).json({ success: true, result: 'Logout successful' });

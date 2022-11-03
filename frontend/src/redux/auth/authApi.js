@@ -5,7 +5,7 @@ const baseQuery = fetchBaseQuery({
   baseUrl: process.env.REACT_APP_BASEURL,
   credentials: 'include',
   prepareHeaders: (headers, { getState }) => {
-    const token = getState().auth.token;
+    const { token } = getState().auth.token;
     if (!token) return headers;
     headers.set('Authorization', `Bearer ${token}`);
   }
@@ -17,7 +17,7 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
   // console.log(extraOptions); //custom like {shout: true}
 
   let result = await baseQuery(args, api, extraOptions);
-  console.log(result);
+  // console.log(result);
 
   // If you want, handle other status codes, too
   // if (result?.error?.status === 403) {
@@ -46,23 +46,36 @@ const baseQueryWithReauth = async (args, api, extraOptions) => {
 export const apiSlice = createApi({
   baseQuery: baseQueryWithReauth,
   tagTypes: ['User'],
-  endpoints: builder => ({})
+  endpoints: (builder) => ({})
 });
 
 export const authApiSlice = apiSlice.injectEndpoints({
-  endpoints: builder => ({
-    login: builder.mutation({
-      query: credentials => ({
+  endpoints: (builder) => ({
+    userRegistration: builder.mutation({
+      query: (details) => ({
+        url: '/auth/signup',
+        method: 'POST',
+        body: { ...details }
+      })
+    }),
+    userLogin: builder.mutation({
+      query: (credentials) => ({
         url: '/auth/signin',
         method: 'POST',
         body: { ...credentials }
       })
     }),
     userLogout: builder.mutation({
-      query: token => ({
+      query: (token) => ({
         url: '/auth/logout',
         method: 'POST',
         body: { ...token }
+      })
+    }),
+    userDetails: builder.mutation({
+      query: (token) => ({
+        url: '/auth/me',
+        method: 'GET'
       })
     })
   })

@@ -83,11 +83,27 @@ const generateVerifyEmailToken = async (user) => {
   return verifyEmailToken;
 };
 
+const removeSavedToken = async (token) => {
+  try {
+    const tokenData = await Token.findOneAndRemove({
+      token: token,
+      type: config.REFRESH_TOKEN
+    });
+    if (!tokenData) {
+      return false;
+    }
+    return true;
+  } catch (error) {
+    return false;
+  }
+};
+
 export default {
   generateNewToken,
   storeToken,
   verifyToken,
   generateAuthToken,
   generateResetPasswordToken,
-  generateVerifyEmailToken
+  generateVerifyEmailToken,
+  removeSavedToken
 };
