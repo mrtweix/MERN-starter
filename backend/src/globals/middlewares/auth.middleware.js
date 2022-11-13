@@ -25,17 +25,13 @@ const authorize = asyncHandler(async (req, res, next) => {
     }
   }
 
-  if (!token) {
-    return next(new CustomError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
-  }
+  if (!token) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
 });
 
 // Grant access to specific roles
 const allowedRoles = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) {
-      return next(new CustomError(httpStatus.BAD_REQUEST, 'Not allowed to access this role'));
-    }
+    if (!roles.includes(req.user.role)) return next(new CustomError(httpStatus.BAD_REQUEST, 'Not allowed to access this role'));
     next();
   };
 };

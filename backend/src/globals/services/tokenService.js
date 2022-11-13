@@ -89,9 +89,7 @@ const removeSavedToken = async (token) => {
       token: token,
       type: config.REFRESH_TOKEN
     });
-    if (!tokenData) {
-      return false;
-    }
+    if (!tokenData) return false;
     return true;
   } catch (error) {
     return false;

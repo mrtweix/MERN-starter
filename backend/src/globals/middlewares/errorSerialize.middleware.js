@@ -24,7 +24,7 @@ const errorSerialize = (err, req, res, next) => {
   // Mongoose duplicate key
   if (err.code === 11000) {
     const message = 'Duplicate field value entered';
-    error = new CustomError(httpStatus.BAD_REQUEST, message);
+    error = new CustomError(httpStatus.CONFLICT, message);
   }
 
   // Mongoose validation error
