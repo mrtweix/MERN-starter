@@ -13,6 +13,7 @@ const authorize = asyncHandler(async (req, res, next) => {
       // Validate token
       const payload = jwt.verify(token, config.JWT_SECRET);
 
+      // find and return user details
       const user = await User.findOne({
         $and: [{ _id: payload.id }, { isEmailConfirmed: true }]
       }).select('-password');
@@ -20,17 +21,26 @@ const authorize = asyncHandler(async (req, res, next) => {
       req.user = user;
       next();
     } catch (err) {
-      return next(new CustomError(httpStatus.FORBIDDEN, 'Not authorized', 'FORBIDDEN'));
+      return next(new CustomError(httpStatus.FORBIDDEN, 'Forbidden access'));
     }
   }
 
   if (!token) {
-    return next(new CustomError(httpStatus.FORBIDDEN, 'Not authorized', 'FORBIDDEN'));
+    return next(new CustomError(httpStatus.UNAUTHORIZED, 'Please authenticate'));
   }
 });
 
+// Grant access to specific roles
+const allowedRoles = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.user.role)) return next(new CustomError(httpStatus.BAD_REQUEST, 'Not allowed to access this role'));
+    next();
+  };
+};
+
 const protect = {
-  authorize
+  authorize,
+  allowedRoles
 };
 
 export default protect;

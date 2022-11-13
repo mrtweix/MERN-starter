@@ -20,7 +20,7 @@ const userSignup = asyncHandler(async (req, res, next) => {
   const { email } = req.body;
 
   // Check user exists
-  const userExists = await User.findOne({ email }).lean();
+  const userExists = await User.findOne({ email });
   if (userExists) return next(new customError(httpStatus.BAD_REQUEST, 'User already exists', 'BAD_REQUEST'));
 
   // Create user

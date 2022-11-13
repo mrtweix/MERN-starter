@@ -10,13 +10,10 @@ const useAuth = () => {
   const [cookies] = useCookies();
   const [userDetails] = authApiSlice.useUserDetailsMutation();
 
-  const getUserDetails = async () => {
-    const { data, error } = await userDetails();
-    console.log({ data, error });
-  };
-
   React.useEffect(() => {
-    getUserDetails();
+    if (cookies?.token) {
+      // getUserDetails();
+    }
   }, []);
 
   return [authenticated, cookies];

@@ -7,7 +7,7 @@ const errorSerialize = (err, req, res, next) => {
   error.message = err.message;
 
   // Log errors
-  console.table({
+  console.log({
     name: err.name,
     code: err.code,
     status: err.statusCode,
@@ -18,13 +18,13 @@ const errorSerialize = (err, req, res, next) => {
   // Mongoose bad ObjectId
   if (err.name === 'CastError') {
     const message = `Resource not found`;
-    error = new CustomError(httpStatus.BAD_REQUEST, message, 'BAD_REQUEST');
+    error = new CustomError(httpStatus.BAD_REQUEST, message);
   }
 
   // Mongoose duplicate key
   if (err.code === 11000) {
     const message = 'Duplicate field value entered';
-    error = new CustomError(httpStatus.BAD_REQUEST, message, 'BAD_REQUEST');
+    error = new CustomError(httpStatus.BAD_REQUEST, message);
   }
 
   // Mongoose validation error
@@ -32,7 +32,7 @@ const errorSerialize = (err, req, res, next) => {
     const message = Object.values(err.errors)
       .map((val) => val)
       .join(', ');
-    error = new CustomError(httpStatus.BAD_REQUEST, message, 'BAD_REQUEST');
+    error = new CustomError(httpStatus.BAD_REQUEST, message);
   }
 
   res.status(error.statusCode || httpStatus.INTERNAL_SERVER_ERROR).json({

@@ -32,7 +32,7 @@ const securityMiddleware = (app) => {
         if (config.allowedOrigins.indexOf(origin) !== -1 || !origin) {
           callback(null, true);
         } else {
-          callback(new CustomError(httpStatus.FORBIDDEN, 'Not allowed by CORS', 'FORBIDDEN'));
+          callback(new CustomError(httpStatus.FORBIDDEN, 'Invalid access blocked by CORS'));
         }
       },
       credentials: true,

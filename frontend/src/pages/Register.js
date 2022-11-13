@@ -21,12 +21,13 @@ const Register = () => {
     if (isEmpty) return alert('all fields are required');
 
     const { data, error } = await userRegistration(formData);
-    if (error?.data?.error) {
-      alert(error?.data?.error);
-    } else {
-      alert(data?.result);
-      navigate('/');
-    }
+    console.log(data, error);
+    // if (error?.data?.error) {
+    //   alert(error?.data?.error);
+    // } else {
+    //   alert(data?.result);
+    //   navigate('/');
+    // }
     setFormData({
       firstName: '',
       lastName: '',

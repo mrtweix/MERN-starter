@@ -35,7 +35,7 @@ const verifyToken = async (token, type) => {
       token,
       type,
       user: payload.id
-    }).lean();
+    });
 
     if (!tokenDoc) return false;
     return tokenDoc;
@@ -65,8 +65,8 @@ const generateAuthToken = async (user) => {
 };
 
 const generateResetPasswordToken = async (email) => {
-  const user = await User.findOne({ email }).lean();
-  if (!user) throw new customError(httpStatus.NOT_FOUND, 'No user found with given email', 'NOT_FOUND');
+  const user = await User.findOne({ email });
+  if (!user) throw new customError(httpStatus.NOT_FOUND, 'No user found with given email');
 
   const expires = moment().add(config.JWT_RESET_PASSWORD_EXPIRATION_DAYS, 'days');
   const resetPasswordToken = generateNewToken(user.id, user.role, email, expires, config.RESET_PASSWORD_TOKEN);

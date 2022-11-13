@@ -1,5 +1,6 @@
 import Joi from 'joi';
 
+// Fields
 const email = Joi.string().required().email().messages({
   'string.email': 'Invalid email address',
   'any.required': 'Email is required'
