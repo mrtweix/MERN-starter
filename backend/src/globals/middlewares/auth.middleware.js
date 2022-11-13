@@ -2,7 +2,7 @@ import jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
 import config from '../../config/config.js';
 import User from '../../models/User.model.js';
-import CustomError from '../services/customError.js';
+import CustomError from '../utility/customError.js';
 import asyncHandler from './asyncHandler.middleware.js';
 
 const authorize = asyncHandler(async (req, res, next) => {
@@ -33,7 +33,9 @@ const authorize = asyncHandler(async (req, res, next) => {
 // Grant access to specific roles
 const allowedRoles = (...roles) => {
   return (req, res, next) => {
-    if (!roles.includes(req.user.role)) return next(new CustomError(httpStatus.BAD_REQUEST, 'Not allowed to access this role'));
+    if (!roles.includes(req.user.role)) {
+      return next(new CustomError(httpStatus.BAD_REQUEST, 'Not allowed to access this role'));
+    }
     next();
   };
 };

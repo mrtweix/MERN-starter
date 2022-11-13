@@ -1,5 +1,5 @@
 import httpStatus from 'http-status';
-import CustomError from '../services/customError.js';
+import CustomError from '../utility/customError.js';
 
 const errorSerialize = (err, req, res, next) => {
   let error = { ...err };

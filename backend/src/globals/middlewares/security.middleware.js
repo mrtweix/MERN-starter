@@ -8,7 +8,7 @@ import compression from 'compression';
 import { json, urlencoded } from 'express';
 import config from '../../config/config.js';
 import mongoSanitize from 'express-mongo-sanitize';
-import CustomError from '../services/customError.js';
+import CustomError from '../utility/customError.js';
 
 const securityMiddleware = (app) => {
   // http parameters pollution security

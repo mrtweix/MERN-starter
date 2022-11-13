@@ -1,10 +1,10 @@
 import moment from 'moment';
 import jwt from 'jsonwebtoken';
 import httpStatus from 'http-status';
-import customError from './customError.js';
 import config from '../../config/config.js';
 import User from '../../models/User.model.js';
 import Token from '../../models/Token.model.js';
+import CustomError from '../utility/customError.js';
 
 const generateNewToken = (userId, role, email, expires, type, secret = config.JWT_SECRET) => {
   const payload = {
@@ -66,7 +66,7 @@ const generateAuthToken = async (user) => {
 
 const generateResetPasswordToken = async (email) => {
   const user = await User.findOne({ email });
-  if (!user) throw new customError(httpStatus.NOT_FOUND, 'No user found with given email');
+  if (!user) throw new CustomError(httpStatus.NOT_FOUND, 'No user found with given email');
 
   const expires = moment().add(config.JWT_RESET_PASSWORD_EXPIRATION_DAYS, 'days');
   const resetPasswordToken = generateNewToken(user.id, user.role, email, expires, config.RESET_PASSWORD_TOKEN);

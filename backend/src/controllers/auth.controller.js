@@ -5,7 +5,7 @@ import httpStatus from 'http-status';
 import config from '../config/config.js';
 import User from '../models/User.model.js';
 import Token from '../models/Token.model.js';
-import customError from '../globals/services/customError.js';
+import CustomError from '../globals/utility/CustomError.js';
 import tokenService from '../globals/services/tokenService.js';
 import emailService from '../globals/services/emailService.js';
 import asyncHandler from '../globals/middlewares/asyncHandler.middleware.js';
@@ -21,7 +21,7 @@ const userSignup = asyncHandler(async (req, res, next) => {
 
   // Check user exists
   const userExists = await User.findOne({ email });
-  if (userExists) return next(new customError(httpStatus.BAD_REQUEST, 'User already exists', 'BAD_REQUEST'));
+  if (userExists) return next(new CustomError(httpStatus.BAD_REQUEST, 'User already exists', 'BAD_REQUEST'));
 
   // Create user
   const user = await User.create(req.body);
@@ -33,7 +33,7 @@ const userSignup = asyncHandler(async (req, res, next) => {
   const confirmEmailURL = `${req.protocol}://${config.FRONTEND_HOST}/confirm_email?token=${confirmEmailToken}`;
 
   // Prepare template
-  let sendMessage = fs.readFileSync(path.resolve(__dirname, '../shared/templates/confirmEmail.html'), {
+  let sendMessage = fs.readFileSync(path.resolve(__dirname, '../globals/shared/templates/confirmEmail.html'), {
     encoding: 'utf-8',
     flag: 'r'
   });
@@ -63,11 +63,11 @@ const userSignin = asyncHandler(async (req, res, next) => {
 
   // Check user exists
   const user = await User.findOne({ email });
-  if (!user) return next(new customError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
+  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
 
   // Check password matches
   const passMatch = await user.matchPassword(password);
-  if (!passMatch) return next(new customError(httpStatus.UNAUTHORIZED, 'Invalid credentials', 'UNAUTHORIZED'));
+  if (!passMatch) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Invalid credentials', 'UNAUTHORIZED'));
 
   // Generate token
   const tokens = await tokenService.generateAuthToken(user);
@@ -87,7 +87,7 @@ const userLogout = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
-  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
 
   // Update record
   await tokenService.removeSavedToken(refreshToken);
@@ -104,7 +104,7 @@ const userEmailVerification = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(token, config.VERIFY_EMAIL_TOKEN);
-  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
 
   // Update record
   await isValidToken.remove();
@@ -137,7 +137,7 @@ const forgotPassword = asyncHandler(async (req, res, next) => {
   const resetPasswordURL = `${req.protocol}://${config.FRONTEND_HOST}/reset_password?token=${resetPasswordToken}`;
 
   // Prepare template
-  let sendMessage = fs.readFileSync(path.resolve(__dirname, '../shared/templates/resetPassword.html'), {
+  let sendMessage = fs.readFileSync(path.resolve(__dirname, '../globals/shared/templates/resetPassword.html'), {
     encoding: 'utf-8',
     flag: 'r'
   });
@@ -168,13 +168,13 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(token, config.RESET_PASSWORD_TOKEN);
-  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
 
   // Validate user and update password
   const user = await User.findOne({
     $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
   });
-  if (!user) return next(new customError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
+  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
 
   user.password = newPassword;
   await user.save();
@@ -210,13 +210,13 @@ const getRefreshToken = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
-  if (!isValidToken) return next(new customError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
 
   // Validate user
   const user = await User.findOne({
     $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
   });
-  if (!user) return next(new customError(httpStatus.UNAUTHORIZED, 'Unauthorized user access', 'UNAUTHORIZED'));
+  if (!user) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Unauthorized user access', 'UNAUTHORIZED'));
 
   // Generate token
   const tokens = await tokenService.generateAuthToken(user);

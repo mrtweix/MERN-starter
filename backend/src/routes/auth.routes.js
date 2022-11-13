@@ -1,9 +1,9 @@
 import express from 'express';
-import validate from '../validations/validator.js';
-import validation from '../validations/auth.validation.js';
+import roles from '../globals/permissions/roles.js';
+import validate from '../globals/validations/validator.js';
 import authController from '../controllers/auth.controller.js';
 import protect from '../globals/middlewares/auth.middleware.js';
-import roles from '../globals/permissions/roles.js';
+import validation from '../globals/validations/auth.validation.js';
 
 const router = express.Router();
 

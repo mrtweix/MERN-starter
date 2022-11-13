@@ -3,9 +3,9 @@ import express from 'express';
 import httpStatus from 'http-status';
 import config from './config/config.js';
 import mountRoutes from './routes/index.js';
-import dbConnect from './config/dbConnect.js';
 import runServer from './config/runServer.js';
-import rateLimiter from './globals/services/rateLimiter.js';
+import dbConnect from './config/dbConnect.js';
+import rateLimiter from './globals/utility/rateLimiter.js';
 import securityMiddleware from './globals/middlewares/security.middleware.js';
 import errorSerialize from './globals/middlewares/errorSerialize.middleware.js';
 
