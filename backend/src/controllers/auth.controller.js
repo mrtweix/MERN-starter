@@ -21,7 +21,7 @@ const userSignup = asyncHandler(async (req, res, next) => {
 
   // Check user exists
   const userExists = await User.findOne({ email });
-  if (userExists) return next(new CustomError(httpStatus.BAD_REQUEST, 'User already exists', 'BAD_REQUEST'));
+  if (userExists) return next(new CustomError(httpStatus.BAD_REQUEST, 'User already exists'));
 
   // Create user
   const user = await User.create(req.body);
@@ -63,11 +63,11 @@ const userSignin = asyncHandler(async (req, res, next) => {
 
   // Check user exists
   const user = await User.findOne({ email });
-  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
+  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found'));
 
   // Check password matches
   const passMatch = await user.matchPassword(password);
-  if (!passMatch) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Invalid credentials', 'UNAUTHORIZED'));
+  if (!passMatch) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Invalid credentials'));
 
   // Generate token
   const tokens = await tokenService.generateAuthToken(user);
@@ -87,7 +87,7 @@ const userLogout = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
-  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid'));
 
   // Update record
   await tokenService.removeSavedToken(refreshToken);
@@ -104,7 +104,7 @@ const userEmailVerification = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(token, config.VERIFY_EMAIL_TOKEN);
-  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid'));
 
   // Update record
   await isValidToken.remove();
@@ -168,13 +168,13 @@ const resetPassword = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(token, config.RESET_PASSWORD_TOKEN);
-  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid'));
 
   // Validate user and update password
   const user = await User.findOne({
     $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
   });
-  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found', 'NOT_FOUND'));
+  if (!user) return next(new CustomError(httpStatus.NOT_FOUND, 'No user with email found'));
 
   user.password = newPassword;
   await user.save();
@@ -210,13 +210,13 @@ const getRefreshToken = asyncHandler(async (req, res, next) => {
 
   // Validate token
   const isValidToken = await tokenService.verifyToken(refreshToken, config.REFRESH_TOKEN);
-  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid', 'BAD_REQUEST'));
+  if (!isValidToken) return next(new CustomError(httpStatus.BAD_REQUEST, 'This request is invalid'));
 
   // Validate user
   const user = await User.findOne({
     $and: [{ _id: isValidToken.user }, { isEmailConfirmed: true }]
   });
-  if (!user) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Unauthorized user access', 'UNAUTHORIZED'));
+  if (!user) return next(new CustomError(httpStatus.UNAUTHORIZED, 'Unauthorized user access'));
 
   // Generate token
   const tokens = await tokenService.generateAuthToken(user);
